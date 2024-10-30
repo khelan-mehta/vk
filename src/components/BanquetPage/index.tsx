@@ -18,7 +18,7 @@ interface Banquet {
   photos: string;
   type: string;
 }
-const BASE_URL = "https://server-staging.vercel.app";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 const BanquetPage = () => {
   const [banquets, setBanquets] = useState<Banquet[]>([]);

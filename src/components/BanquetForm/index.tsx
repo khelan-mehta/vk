@@ -57,7 +57,7 @@ const BanquetForm: React.FC<BanquetFormProps> = ({
     const fetchPackages = async () => {
       try {
         const response = await axios.get(
-          "https://server-staging.vercel.app/packages",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/packages`,
         );
         console.log(response.data.data);
         // Fetch packages from the API

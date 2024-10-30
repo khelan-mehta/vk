@@ -38,7 +38,7 @@ const BookingPage: React.FC = () => {
     const fetchBanquets = async () => {
       try {
         const response = await axios.get(
-          "https://server-staging.vercel.app/banquets",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/banquets`,
         );
         setBanquets(response.data);
       } catch (error) {
@@ -60,7 +60,7 @@ const BookingPage: React.FC = () => {
 
     try {
       const response = await axios.get(
-        "https://server-staging.vercel.app/bookings/filters",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings/filters`,
         {
           params: payload, // Send payload as query parameters
         },

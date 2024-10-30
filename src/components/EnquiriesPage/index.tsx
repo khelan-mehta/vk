@@ -40,7 +40,7 @@ const EnquiriesPage: React.FC = () => {
     const fetchBanquetHalls = async () => {
       try {
         const response = await fetch(
-          "https://server-staging.vercel.app/banquets",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/banquets`,
         );
         const data = await response.json();
         setBanquetHalls(data);
@@ -62,7 +62,7 @@ const EnquiriesPage: React.FC = () => {
           : null;
 
         const response = await axios.get(
-          "https://server-staging.vercel.app/inquiries/filters",
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/inquiries/filters`,
           {
             params: {
               status: selectedStatus,
@@ -88,7 +88,7 @@ const EnquiriesPage: React.FC = () => {
   const handleBookingConfirm = async (bookingDetails: any) => {
     try {
       await axios.post(
-        "https://server-staging.vercel.app/bookings",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/bookings`,
         bookingDetails,
       );
       // Remove the inquiry after confirming the booking
@@ -109,7 +109,7 @@ const EnquiriesPage: React.FC = () => {
   const handleCancel = async (inquiryId: string) => {
     try {
       await axios.delete(
-        `https://server-staging.vercel.app/inquiries/${inquiryId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/inquiries/${inquiryId}`,
       );
       // Remove the canceled inquiry
       setInquiries((prev) =>

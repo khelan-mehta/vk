@@ -56,7 +56,7 @@ const RestaurantDetails: React.FC = () => {
   // Fetch functions
   const fetchRestaurant = async () => {
     const response = await axios.get<Restaurant>(
-      `https://server-staging.vercel.app/restaurant/my-restaurant/${ownerId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/restaurant/my-restaurant/${ownerId}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -70,7 +70,7 @@ const RestaurantDetails: React.FC = () => {
 
   const fetchOwner = async () => {
     const response = await axios.get<Owner>(
-      `https://server-staging.vercel.app/restaurant-owners/${ownerId}`,
+      `${process.env.NEXT_PUBLIC_API_BASE_URL}/restaurant-owners/${ownerId}`,
       {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -103,7 +103,7 @@ const RestaurantDetails: React.FC = () => {
   const handleSave = async () => {
     try {
       await axios.put(
-        `https://server-staging.vercel.app/restaurant-owners/${ownerId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/restaurant-owners/${ownerId}`,
         editableOwner,
         {
           headers: {
@@ -128,7 +128,7 @@ const RestaurantDetails: React.FC = () => {
       };
 
       await axios.put(
-        `https://server-staging.vercel.app/restaurant/${restaurant?._id}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/restaurant/${restaurant?._id}`,
         updatedRestaurant,
         {
           headers: {
