@@ -6,6 +6,8 @@ import axios from "axios";
 import { format, parseISO } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown } from "lucide-react";
+import { lookInSession } from "@/lib/session";
+import { useSession } from "next-auth/react";
 
 type CartItem = {
   name: string;
@@ -27,7 +29,7 @@ const Orders = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [activeOrderId, setActiveOrderId] = useState<number | null>(null);
-
+  const { data } = useSession();
   // Mock data for orders
   const mockOrders = [
     {
@@ -66,10 +68,20 @@ const Orders = () => {
   ];
 
   useEffect(() => {
+    if (!data || !data.user || !data.user._uid) return;
+
+    const userId = data.user._uid;
+    const accessToken = data.user.access_token;
+
     const fetchOrders = async () => {
-      try { 
+      try {
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}orders/${process.env.NEXT_PUBLIC_USER_ID}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}orders/${userId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`, // Add Bearer token to Authorization header
+            },
+          }
         );
         const data = response.data;
 

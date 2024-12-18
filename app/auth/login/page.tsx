@@ -627,6 +627,13 @@ const SigninPage = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+            <div className="flex items-center justify-between">
+              <hr className="w-[30%] border-red-950 " />
+              <p className="self-center">
+                <Link href={"/auth/forgot"}>Forgot Password ?</Link>{" "}
+              </p>
+              <hr className="w-[30%] border-red-950 " />
+            </div>
             <div className="flex flex-col lg:flex-col justify-between space-y-4 lg:space-y-0">
               <Button
                 variant="primary"
@@ -642,7 +649,7 @@ const SigninPage = () => {
               </Link> */}
               <div className="text-center pt-3">
                 Not registered yet?{" "}
-                <Link 
+                <Link
                   href="/auth/register"
                   className="hover:underline text-[#650002]"
                 >

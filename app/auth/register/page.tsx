@@ -812,7 +812,7 @@ const RegisterPage = () => {
                           selectedLanguage === code ? "primary" : "secondary"
                         }
                         onClick={() => changeLanguage(code)}
-                        className={`w-full ${
+                        className={`w-full rounded-lg p-2 ${
                           selectedLanguage === code
                             ? "bg-[#650002] text-white"
                             : "bg-transparent border-[#650002] text-[#650002]"

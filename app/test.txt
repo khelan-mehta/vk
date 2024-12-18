@@ -170,3 +170,45 @@ export default function Home() {
 
 
 import Button from "../components/LoaderButton";
+
+const circlePath = {
+  hidden: { strokeDasharray: "0 360" },
+  show: {
+    strokeDasharray: "0 0",
+    transition: {
+      duration: 1,
+      delay: 0.6,
+    },
+  },
+};
+
+{height === 100 && (
+            <>
+              <motion.div initial="hidden" animate="show" variants={fadeIn}>
+                <div className="mb-24 sm:mb-0">
+                  <Krishna />
+                </div>
+              </motion.div>
+              <svg
+                width="425"
+                height="425"
+                viewBox="0 0 200 200"
+                xmlns="http://www.w3.org/2000/svg"
+                className="absolute bottom-[-5vh] left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-180"
+              >
+                <motion.path
+                  variants={circlePath}
+                  initial="hidden"
+                  animate="show"
+                  d="M100,10 
+              a80,80 0 0,1 0,160 
+              a80,80 0 0,1 0,-160"
+                  fill="none"
+                  stroke="#fff"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  transform="rotate(360, 360, 360)"
+                />
+              </svg>
+            </>
+          )}

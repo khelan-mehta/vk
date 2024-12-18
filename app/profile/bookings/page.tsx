@@ -3,11 +3,19 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import { format } from "date-fns";
-import { CalendarDays, Clock, User, CreditCard, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  CalendarDays,
+  Clock,
+  User,
+  CreditCard,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import PaymentHistoryTable from "@/components/PaymentHistoryTable"; // Import the PaymentHistoryTable component
+import { useSession } from "next-auth/react";
 
 // Define types for Booking and PaymentHistory
 export interface PaymentHistory {
@@ -38,7 +46,9 @@ const Bookings = () => {
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [statusFilter, setStatusFilter] = useState("");
-  const [expandedBookingId, setExpandedBookingId] = useState<string | null>(null);
+  const [expandedBookingId, setExpandedBookingId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     fetchBookings();
@@ -47,12 +57,17 @@ const Bookings = () => {
   const formattedDate = selectedDate
     ? new Date(selectedDate.setUTCHours(0, 0, 0, 0)).toISOString()
     : null;
+  const { data } = useSession();
+  const accessToken = data?.user.access_token;
 
   const fetchBookings = async () => {
     try {
       const response = await axios.get<Booking[]>(
         `${process.env.NEXT_PUBLIC_API_BASE_URL}bookings/filters`,
         {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Add Bearer token to Authorization header
+          },
           params: {
             status: statusFilter,
             bookingDate: formattedDate ? formattedDate : "",
@@ -161,7 +176,9 @@ const Bookings = () => {
 
                 {/* Payment History Table */}
                 {expandedBookingId === booking._id && (
-                  <PaymentHistoryTable paymentHistory={booking.paymentHistory} />
+                  <PaymentHistoryTable
+                    paymentHistory={booking.paymentHistory}
+                  />
                 )}
               </div>
             ))}

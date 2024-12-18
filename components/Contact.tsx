@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   MapPin,
   Clock,
@@ -11,6 +11,32 @@ import {
 import Image from "next/image";
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    message: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Construct mailto link
+    const mailtoLink = `mailto:vaikunthvillagerestaurant@gmail.com?subject=Contact%20Form%20Submission&body=${encodeURIComponent(
+      `Name: ${formData.firstName} ${formData.lastName}\nEmail: ${formData.email}\nMessage: ${formData.message}`
+    )}`;
+
+    // Open mail client
+    window.location.href = mailtoLink;
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-grow flex items-center justify-center p-4 md:p-8">
@@ -22,28 +48,50 @@ const Contact = () => {
               <br />
               Get in touch!
             </h2>
-            <form className="space-y-4 flex flex-col gap-4">
+            <form
+              className="space-y-4 flex flex-col gap-4"
+              onSubmit={handleSubmit}
+            >
               <input
                 className="w-full p-4 border-b border-[#000] focus:border-[#000] outline-none transition-all duration-300 bg-transparent text-[#000] placeholder:text-[#00055] focus:placeholder:text-[#000]"
                 type="text"
                 placeholder="First Name"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                required
               />
               <input
                 className="w-full p-4 border-b border-[#000] focus:border-[#000] outline-none transition-all duration-300 bg-transparent text-[#000] placeholder:text-[#00055] focus:placeholder:text-[#000]"
                 type="text"
                 placeholder="Last Name"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                required
               />
               <input
                 className="w-full p-4 border-b border-[#000] focus:border-[#000] outline-none transition-all duration-300 bg-transparent text-[#000] placeholder:text-[#00055] focus:placeholder:text-[#000]"
                 type="email"
                 placeholder="Email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
               />
               <textarea
                 className="w-full p-4 border-b border-[#000] focus:border-[#000] outline-none transition-all duration-300 bg-transparent text-[#000] placeholder:text-[#00055] focus:placeholder:text-[#000]"
                 rows={4}
                 placeholder="Message"
+                name="message"
+                value={formData.message}
+                onChange={handleChange}
+                required
               ></textarea>
-              <button className="bg-[#650002] text-white px-8 py-3 rounded-lg hover:bg-[#660000] transition duration-300">
+              <button
+                type="submit"
+                className="bg-[#650002] text-white px-8 py-3 rounded-lg hover:bg-[#660000] transition duration-300"
+              >
                 Send
               </button>
             </form>

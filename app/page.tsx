@@ -1,13 +1,14 @@
 "use client";
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import HomePage from "@/components/Home";
 import Krishna from "@/components/Loading/Krishna";
 import { motion } from "framer-motion";
 import Button from "@/components/LoaderButton";
-// Assuming you have a Button component
+import { gsap } from "gsap";
 
+// Define the fadeIn animation
 const fadeIn = {
   hidden: { opacity: 0 },
   show: {
@@ -32,8 +33,7 @@ const circlePath = {
 };
 
 export default function Home() {
-  const roundedFactor = 0.5;
-  const [height, setHeight] = useState(100); // Initial height as 100%
+  const containerRef = useRef<HTMLDivElement>(null); // Reference for the animated container
   const [userInteracted, setUserInteracted] = useState(false);
 
   const handleUserInteraction = () => {
@@ -41,31 +41,26 @@ export default function Home() {
   };
 
   useEffect(() => {
-    let interval: NodeJS.Timeout | null = null;
-
-    if (userInteracted && height > 0) {
-      interval = setInterval(() => {
-        setHeight((prevHeight) => Math.max(prevHeight - 3, 0));
-      }, 50); // Adjust speed as needed
-    }
-
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [userInteracted, height]);
+    if (userInteracted && containerRef.current) {
+      // Animate the height to scroll up smoothly
+      gsap.to(containerRef.current, {
+        height: "0vh",
+        duration: 1.5, // Duration of the animation
+        ease: "power1.out", // Easing for a smooth effect
+      });
+    } 
+  }, [userInteracted]);
 
   return (
     <div className="relative">
+      {/* Animated container */}
       <div
-        className={
-          height >= 100
-            ? `fixed top-0 left-0 z-50 w-full bg-gradient-to-b to-red-800 via-[#450001] from-[#650002] transition-all duration-300 ease rounded-b-[0px]`
-            : `fixed top-0 left-0 z-50 w-full bg-gradient-to-b to-red-800 via-[#450001] from-[#650002] transition-all duration-300 ease`
-        }
-        style={{ height: `${height}vh` }}
+        ref={containerRef}
+        className="fixed top-0 left-0 z-50 w-full bg-gradient-to-b to-red-800 via-[#450001] from-[#650002] transition-all ease rounded-b-[0px]"
+        style={{ height: "100vh" }}
       >
         <div className="relative flex items-center justify-center h-full text-white">
-          {height === 100 && (
+          {!userInteracted && (
             <>
               <motion.div initial="hidden" animate="show" variants={fadeIn}>
                 <div className="mb-24 sm:mb-0">
@@ -98,7 +93,8 @@ export default function Home() {
         </div>
       </div>
 
-      {height > 0 && !userInteracted && (
+      {/* Button to trigger animation */}
+      {!userInteracted && (
         <div className="fixed z-50 bottom-0 left-1/2 -translate-x-1/2 -translate-y-1/2">
           <Button
             label="Enter Vaikunth"
@@ -109,7 +105,8 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex">{height === 0 && <HomePage />}</div>
+      {/* HomePage content after animation */}
+      <div className="flex">{userInteracted && <HomePage />}</div>
     </div>
   );
 }

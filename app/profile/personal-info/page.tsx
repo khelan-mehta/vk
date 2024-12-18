@@ -3,9 +3,16 @@
 import React, { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Button from "@/components/Button";
+import { lookInSession } from "@/lib/session";
+import { useSession } from "next-auth/react";
+import axios from "axios";
 
 const UserProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
+  const [apiUrl, setApiUrl] = useState("");
+  const { data } = useSession();
+  console.log(data);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -16,28 +23,36 @@ const UserProfile = () => {
     location: "",
     postalCode: "",
   });
-
-  const userId = "672a453ea5a2c3fc17b6e677"; // Replace with dynamic ID as needed
-  const apiUrl = `https://server-staging.vercel.app/users/${userId}`;
-
-  // Fetch user data on component mount
   useEffect(() => {
+    // Ensure data is loaded before proceeding
+    if (!data || !data.user || !data.user._uid) return;
+
+    const userId = data.user._uid;
+    const accessToken = data.user.access_token;
+    const url = `https://server-staging.vercel.app/users/${userId}`;
+    setApiUrl(url);
+
     const fetchUserData = async () => {
       try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
 
-        if (data) {
-          const [firstName, lastName] = data.name.split(" ");
+        const userData = response.data;
+
+        if (userData) {
+          const [firstName, lastName] = userData.name?.split(" ") || ["", ""];
           setFormData({
             firstName,
             lastName,
-            email: data.email,
-            address: data.addressLine1 || "",
-            phoneNumber: data.phoneNumber,
-            dob: data.dob || "", // Assuming `dob` might be available in data
-            location: data.city || "",
-            postalCode: data.postalCode || "",
+            email: userData.email,
+            address: userData.addressLine1 || "",
+            phoneNumber: userData.phoneNumber,
+            dob: userData.dob || "",
+            location: userData.city || "",
+            postalCode: userData.postalCode || "",
           });
         }
       } catch (error) {
@@ -46,9 +61,13 @@ const UserProfile = () => {
     };
 
     fetchUserData();
-  }, [apiUrl]);
+  }, [data]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const userId = data?.user._uid; // Replace with dynamic ID as needed
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -218,9 +237,17 @@ const UserProfile = () => {
             {/* Buttons */}
             <div className="flex justify-end mt-6 space-x-4">
               {!isEditing ? (
-                <Button label="Edit" variant="secondary" onClick={handleEditClick} />
+                <Button
+                  label="Edit"
+                  variant="secondary"
+                  onClick={handleEditClick}
+                />
               ) : (
-                <Button label="Save" variant="primary" onClick={handleSaveClick} />
+                <Button
+                  label="Save"
+                  variant="primary"
+                  onClick={handleSaveClick}
+                />
               )}
             </div>
           </form>

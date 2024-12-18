@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 function Krishna() {
   return (
-    <div className="w-full h-full grid place-items-center">
+    <div className="w-full h-full grid place-items-center z-50">
       <svg
         version="1.0"
        

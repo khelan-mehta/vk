@@ -1,5 +1,4 @@
-"use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   User,
   CreditCard,
@@ -14,14 +13,83 @@ import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import profile from "../public/profile.png";
 import Image from "next/image";
+import axios from "axios";
+import MembershipCard from "../components/MemberShipCard"; // Assuming it's in the same folder
+
 interface SidebarProps {
   activeItem: string;
+  isSidebarOpen?: boolean;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activeItem }) => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { status } = useSession();
-  console.log(status);
+const membershipDetails = [
+  {
+    name: "Gold",
+    price: "$49",
+    description: "Ideal for intimate gatherings and special occasions.",
+    details: ["Online booking", "Premium support: 3 months"],
+    bg: "from-yellow-400 to-yellow-700",
+  },
+  {
+    name: "Plus",
+    price: "$99",
+    description: "Perfect for larger gatherings and events.",
+    details: ["Hall rental", "Premium support: 6 months"],
+    bg: "from-[#a83030] to-[#2b0505]",
+  },
+  {
+    name: "Complete",
+    price: "$499",
+    description: "All-inclusive for weddings and large events.",
+    details: ["Full service catering", "Event planning assistance"],
+    bg: "from-green-300 to-green-700",
+  },
+];
+
+const Sidebar: React.FC<SidebarProps> = ({ activeItem, isSidebarOpen }) => {
+  const { status, data } = useSession();
+  const [membershipData, setMembershipData] = useState<any>(null);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      const userId = data.user._uid;
+      const accessToken = data.user.access_token;
+      const url = `https://server-staging.vercel.app/users/${userId}`;
+
+      const fetchUserData = async () => {
+        try {
+          const response = await axios.get(url, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          });
+
+          const userData = response.data;
+
+          if (userData) {
+            // Assuming the membership details are part of the user data.
+            const membership = userData.enrolledMembership;
+            console.log(userData);
+
+            console.log(membership);
+
+            if (membership == "gold") {
+              setMembershipData(0);
+            } else if (membership == "plus") {
+              setMembershipData(1);
+            } else if (membership == "complete") {
+              setMembershipData(2);
+            } else {
+              setMembershipData(1);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [status, data]);
 
   const getButtonStyles = (item: string) => {
     const isActive = activeItem === item;
@@ -40,24 +108,11 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem }) => {
 
   return (
     <div className=" z-50">
-      <button
-        className="flex z-50 right-2 top-2  bg-[#650000] text-white  px-3 py-2 rounded-full"
-        onClick={() => setIsSidebarOpen(true)}
-      >
-        ☰
-      </button>
-
       <div
         className={`fixed top-0 left-0 h-full w-80 bg-white border-l z-10 rounded-l-3xl shadow-md transform transition-transform duration-300 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         } lg:relative lg:translate-x-0 lg:block`}
       >
-        <button
-          className="absolute top-4 right-4 text-[#650000] text-3xl lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          &times;
-        </button>
         <div className="flex flex-col p-4 lg:p-8">
           <div className="flex text-center flex-col justify-center items-center mb-6">
             <Image
@@ -72,14 +127,17 @@ const Sidebar: React.FC<SidebarProps> = ({ activeItem }) => {
               <h3 className="text-2xl lg:text-3xl font-bold">
                 Vaikunth Nivasi
               </h3>
-              <div className="my-4 relative">
-                <span className="bg-gradient-to-r from-yellow-400 to-yellow-600 text-white text-sm font-semibold px-4 py-2 rounded-full shadow-lg transform transition-transform duration-300 hover:scale-105">
-                  Gold Member
-                </span>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-300 to-yellow-500 opacity-30 blur-md"></div>
-              </div>
             </div>
           </div>
+
+          {/* Conditionally render the MembershipCard */}
+          {membershipData && (
+            <MembershipCard
+              name={membershipDetails[membershipData].name}
+              bg={membershipDetails[membershipData].bg}
+            />
+          )}
+
           <div className="flex font-semibold flex-col space-y-4">
             {/* Navigation Links */}
             <Link href="/">

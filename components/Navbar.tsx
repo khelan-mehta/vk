@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { Icons } from "./Icons";
 import { User2 } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { usePathname } from "next/navigation";
 const Navbar = () => {
   const pathname = usePathname();
   const blacklistUrls = ["/membership"];
-
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   // Check if the current pathname is in the blacklist
   if (blacklistUrls.includes(pathname)) {
     return null; // Don't render the Navbar
@@ -28,7 +28,27 @@ const Navbar = () => {
                   <Icons.Logo />
                 </Link>
               </div>
-              <Sidebar activeItem="Home" />
+              <Sidebar activeItem="Home" isSidebarOpen={sidebarOpen} />
+              {sidebarOpen ? (
+                <>
+                  <button
+                    className="absolute z-50 top-0 right-12 text-[#650000] text-3xl lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
+                  >
+                    &times;
+                  </button>
+                </>
+              ) : (
+                <>
+                  {" "}
+                  <button
+                    className="flex z-50 right-2 top-2  bg-[#650000] text-white  px-3 py-2 rounded-full"
+                    onClick={() => setSidebarOpen(true)}
+                  >
+                    ☰
+                  </button>
+                </>
+              )}
             </div>
             <hr className="w-[80%] self-center mt-5" />
           </div>
